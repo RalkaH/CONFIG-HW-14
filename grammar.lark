@@ -1,0 +1,35 @@
+start: (statement)*
+
+statement: comment
+         | const_decl
+         | value
+
+comment: REM_COMMENT | MULTILINE_COMMENT
+
+const_decl: "const" NAME "=" value ";"
+
+value: NUMBER
+     | STRING  
+     | array
+     | const_expr
+
+array: "[" value* "]"
+
+const_expr: "!{" expr "}"
+
+expr: expr "+" expr                    -> add
+    | "pow" "(" expr "," expr ")"      -> pow
+    | "ord" "(" STRING ")"             -> ord
+    | NAME                             -> var
+    | NUMBER                           -> number
+    | "(" expr ")"                     -> parens
+
+REM_COMMENT: "REM" /[^\n]*/
+MULTILINE_COMMENT: "(comment" /(.|\n)*?/ ")"
+
+STRING: /@"[^"]*"/
+NUMBER: /[+-]?\d+\.\d+/
+NAME: /[a-z][a-z0-9_]*/
+
+%import common.WS
+%ignore WS
